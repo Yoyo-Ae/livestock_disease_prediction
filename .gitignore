@@ -10,6 +10,9 @@ __pycache__/
 *.pyo 
 *.pyd 
 
+#signincred
+git_sign
+
 #Jupyter notebooks checkpoints
 .ipynb_checkpoints
 
