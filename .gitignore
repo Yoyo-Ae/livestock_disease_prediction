@@ -21,7 +21,7 @@ models/*.pkl
 models/*.joblib
 
 #data files
-data/raw/
+data/raw_data/
 data/processed/
 
 #vscode settings
