@@ -1,20 +1,21 @@
+DROP TABLE IF EXISTS outbreak_records;
 
 -- CORE TRAINING DATASET
 CREATE TABLE IF NOT EXISTS outbreak_records(
     id SERIAL PRIMARY KEY,
-    country VARCHAR(100) NOT NULL,
-    disease_type VARCHAR(100) NOT NULL,
-    species VARCHAR(80) NOT NULL,
+    country VARCHAR(255) NOT NULL,
+    disease_type VARCHAR(255) NOT NULL,
+    species VARCHAR(255) NOT NULL,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
     livestock_density FLOAT,
     rainfall_mm FLOAT,
-    temp_celsius FLOAT,
+    temp_celsuis FLOAT,
     rainfall_anomaly FLOAT,
     temp_anomaly FLOAT,
-    rolling_outbreak_count INTEGER NOT NULL,
-    season VARCHAR(20),
-    geopolitical_zone VARCHAR(50),
+    rolling_outbreak_count INTEGER DEFAULT 0,
+    season VARCHAR(100),
+    geopolitical_zone VARCHAR(100),
     outbreak_occurred INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -24,7 +25,7 @@ CREATE TABLE IF NOT EXISTS outbreak_records(
 CREATE TABLE IF NOT EXISTS prediction_log(
     id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
-    source_interface VARCHAR(20) NOT NULL,
+    source_interface VARCHAR(100) NOT NULL,
     country_encoded INTEGER NOT NULL,
     disease_encoded INTEGER NOT NULL,
     species_encoded INTEGER NOT NULL,
