@@ -77,6 +77,57 @@ empres = empres[empres["species"].str.contains(
     "Cattle|Bovine|Goat|Ruminant|Poultry|Sheep",
     case=False, na=False
 )]
+print(f"species no {empres['species'].value_counts()}\n")
+
+def clean_species(species_str):
+    if pd.isna(species_str):
+        return "Other"
+    s= str(species_str).lower().strip()
+
+    s = s.replace("domestic -", "").replace("wild -", "").replace("captive -", "")
+
+    if "|" in s:
+        s=s.split("|")[0].strip()
+    if any(word in s for word in [
+        "cattle", "bovine","bovines","bos","zebu","cow","bull","calf","buffalo","buffaloe",
+        "ruminant","bontebok","springbok","ibex"
+    ]):
+        return "Cattle"
+    if "goat/sheep" in s:
+        return "Small Ruminants"
+    if any(word in s for word in [
+        "goat", "caprine", "capra"
+    ]):
+        return "Goats"
+    if any(word in s for word in [
+        "sheep","ovine","ovis", "lamb"
+    ]):
+        return "Sheep"
+    if any(word in s for word in [
+        "small ruminant"
+    ]):
+        return "Small Ruminants"
+    if any(word in s for word in [
+        "swine", "pig", "poricine", "sus", "boar","sow"
+    ]):
+        return "Swine"
+    if any(word in s for word in[
+        "poultry", "chicken", "gailus","birds","fowl","duck","turkey","hen"
+    ]):
+        return "Poultry"
+    if any(word in s for word in[
+        "camel", "camelid","camelids","alpaca","llama"
+    ]):
+        return "Camelids"
+    if any(word in s for word in[
+        "mammal","unspecified","unidentified"
+    ]):
+        return "Other"
+    return "Other"
+
+empres["species"] = empres["species"].apply(clean_species)
+print(f"\nSpecies after cleaning: {empres["species"].value_counts()}\n")
+
 
 empres = empres.dropna(subset=["country","disease_type","year","month"])
 empres["year"] = empres["year"].astype(int)
@@ -85,6 +136,7 @@ empres["month"] = empres["month"].astype(int)
 print(f"EMPRES-i after filtering: {empres.shape}")
 print(empres["country"].value_counts().head(10))
 print(empres["disease_type"].value_counts())
+print(empres['admin_level'].value_counts())
 
 #LOAD FAOSTAT LIVESTOCK
 faostat = pd.read_csv("data/raw_data/faostat_livestock2.csv")
@@ -175,16 +227,23 @@ negatives = negatives.drop(columns=["_key"])
 
 outbreak_clean = outbreak.drop(columns=["_key"])
 df= pd.concat([outbreak_clean, negatives], ignore_index=True)
+print(f"After concat: ")
+print(f"total rows: {len(df)}")
+print(f"outb=1: {(df['outbreak_occurred']==1).sum()}")
+print(f"outb=0: {(df['outbreak_occurred']==0).sum()}")
+print(f"outb rate: {df['outbreak_occurred'].mean():.2%}")
 
 df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+#df['geopolitical_zone'] = empres['admin_level']
 
 print(f"\nCombined dataset: {df.shape}")
 print(f"Outbreak rate: {df['outbreak_occurred'].mean():.2%}")
 print(f"Outbreak rows: {outbreak['outbreak_occurred'].sum()}")
 print(f"No-Outbreak: {(df['outbreak_occurred'] == 0).sum()}")
+print(f"columns: {df.columns.tolist()}\n")
 
 #MERGE FAOSTAT
-df = pd.merge(outbreak,faostat_agg, on=["country","year"], how="left")
+df = pd.merge(df,faostat_agg, on=["country","year"], how="left")
 df = pd.merge(df, land_latest,on="country", how="left")
 
 #livestock density
@@ -199,6 +258,7 @@ df = pd.merge(df,climate, on=["country","year","month"], how="left")
 print(f"After climate: {df.shape}")
 print(f"Missing temp: {df['temp_celsuis'].isnull().sum()}")
 print(f"Missing rainfall: {df['rainfall_mm'].isnull().sum()}")
+print(f"columns: {df.columns.tolist()}\n")
 
 #ADD GEOPOLITICAL ZONE FOR NIGERIA
 NIGERIA_ZONES ={
@@ -209,7 +269,8 @@ NIGERIA_ZONES ={
     "Enugu":"South East", "Anambra":"South East","Imo":"South East", "Abia":"South East","Ebonyi":"South East",
     "Rivers":"South South", "Delta":"South South","Cross River":"South South","Akwa Ibom":"South South", "Bayelsa":"South South","Edo":"South South"
 }
-df["geopolitical_zone"] = df["country"].map(NIGERIA_ZONES)
+#df["geopolitical_zone"] = df["country"].map(empres['admin_level'])
+print(f"columns: {df.columns.tolist()}\n")
 
 #CLEAN UP
 #drop rows missing values/critical fields
@@ -222,6 +283,8 @@ print(f"\nIntegrated dataser saved: {df.shape}")
 #postgresql write up
 df = df.sort_values(["country", "disease_type", "year", "month"]).reset_index(drop=True)
 
+
+#preprocess -feature engineering
 df["rolling_outbreak_count"] = (
     df.groupby(["country","disease_type"])["outbreak_occurred"].transform(lambda x: x.shift(1).rolling(window=12, min_periods=1).sum())
     .fillna(0).astype(int)
