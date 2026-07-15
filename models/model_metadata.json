@@ -1,0 +1,34 @@
+{
+  "model_name": "RandomForest",
+  "accuracy": 0.9811899679829242,
+  "precision": 0.6257668711656442,
+  "recall": 0.5604395604395604,
+  "f1-score": 0.591304347826087,
+  "auc-roc": 0.930302265413012,
+  "features": [
+    "country_encoded",
+    "disease_type_encoded",
+    "species_encoded",
+    "year",
+    "month_sin",
+    "month_cos",
+    "season_encoded",
+    "livestock_density_log",
+    "rainfall_mm",
+    "temp_anomaly",
+    "rainfall_anomaly",
+    "temp_celsuis",
+    "rolling_outbreak_count"
+  ],
+  "best_params": {
+    "max_depth": null,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "n_estimators": 100
+  },
+  "trained_at": "2026-07-15T14:14:30.342030",
+  "optimal_threshold": 0.3,
+  "threshold_recall": 0.7198,
+  "threshold_precision": 0.4107,
+  "threshold_rationale": "Threshold of 0.30 selected to prioritise recall (0.72) over precision(0.41).In livestock disease surveillance, missing an outbreakcarries greater real-worldcost than false alarm. A false alarmtriggers precautionary monitoring.A missed outbreak results in uncontrolled disease spread and animal mortality."
+}
