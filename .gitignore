@@ -31,3 +31,6 @@ data/processed/
 .DS_Store
 Thumbs.db
 
+#bash files
+bash.py
+

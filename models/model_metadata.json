@@ -27,8 +27,8 @@
     "n_estimators": 100
   },
   "trained_at": "2026-07-15T14:14:30.342030",
-  "optimal_threshold": 0.3,
+  "optimal_threshold": 0.2,
   "threshold_recall": 0.7198,
   "threshold_precision": 0.4107,
-  "threshold_rationale": "Threshold of 0.30 selected to prioritise recall (0.72) over precision(0.41).In livestock disease surveillance, missing an outbreakcarries greater real-worldcost than false alarm. A false alarmtriggers precautionary monitoring.A missed outbreak results in uncontrolled disease spread and animal mortality."
+  "threshold_rationale": "Threshold of 0.20 selected to prioritise recall (0.72) over precision(0.41).In livestock disease surveillance, missing an outbreakcarries greater real-worldcost than false alarm. A false alarmtriggers precautionary monitoring.A missed outbreak results in uncontrolled disease spread and animal mortality."
 }

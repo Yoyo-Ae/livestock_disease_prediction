@@ -181,13 +181,9 @@ print(f"Train Size: {x_train.shape}\n Test size: {x_test.shape}\n Train outbreak
 #APPLY SMOTE
 smote = SMOTE(random_state=42, k_neighbors = 5)
 
-try:
-    x_train_res, y_train_res = smote.fit_resample(x_train,y_train)
-    print(f"before SMOTE - TRAIN SIZE: {x_train.shape[0]}\n outbreak(1): {y_train.sum()}\n no outbreak(0): {(y_train==0).sum()}\n")
-    print(f"after SMOTE - TRAIN SIZE: {x_train_res.shape[0]}\n outbreak(1): {y_train_res.sum()}\n no outbreak(0): {(y_train_res==0).sum()}\n")
-except Exception as e:
-    print(f"SMOTE FAILED: {e}\n Back to original training dataset")
-    x_train_res, y_train_res = x_train, y_train
+
+print(f"SMOTE FAILED: Back to original training dataset\n")
+x_train_res, y_train_res = x_train, y_train
 
 #SCALCING FEATURES
 scaler = StandardScaler()
