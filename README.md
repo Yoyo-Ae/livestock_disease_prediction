@@ -13,9 +13,21 @@ FMD > PPR > LSD > CBPP > RVF
 ## Target Region
 Nigeria and sub-Saharan Africa
 
-## Setup
-1. clone the repo
-2. Copy `.env.example` to `.env` and fill in credeentials
-3. Run `pip install -r requirement.txt`
-4. Run `psql -U postgres -d livestock_db -f db/schema.sql`
-5. Run `uvicron api.main:app --reload` to start API
+## Live Deployment
+
+| Service | URL |
+|---------|-----|
+| API (FastAPI) | https://livestock-disease-prediction-api.onrender.com |
+| API Docs (Swagger) |https://livestock-disease-prediction-api.onrender.com/docs |
+| Web Dashboard | https://livestock-disease-prediction-dashboard.onrender.com |
+| USSD Webhook |https://livestock-disease-prediction-ussd.onrender.com |
+
+## Local Development
+
+   ## Setup
+   1. clone the repo
+   2. Copy `.env.example` to `.env` and fill in credeentials
+   3. Run `pip install -r requirement.txt`
+   4. Run `psql -U postgres -d livestock_db -f db/schema.sql`
+   5. Run `uvicron api.main:app --reload` to start API
+
