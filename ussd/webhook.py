@@ -20,8 +20,10 @@ app = FastAPI(title="Livestock Disease USSD Webhook")
 
 engine = create_engine(os.getenv("DATABASE_URL"))
 
-PREDICT_URL = "http://localhost:8000/predict"
-
+PREDICT_URL = os.getenv(
+    "PREDICT_URL",
+    "http://localhost:8000/predict"  # fallback for local dev
+)
 #Mapping tables 
 
 COUNTRY_MAP = {
