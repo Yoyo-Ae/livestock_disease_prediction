@@ -1,0 +1,47 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /home/anna/PROJECTS/livestock-disease-prediction/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/anna/PROJECTS/livestock-disease-prediction
+plugins: anyio-4.14.1
+collecting ... collected 32 items
+
+tests/test_api.py::test_health_endpoint PASSED                           [  3%]
+tests/test_api.py::test_predict_returns_valid_response PASSED            [  6%]
+tests/test_api.py::test_predicted_class_is_binary PASSED                 [  9%]
+tests/test_api.py::test_probability_range PASSED                         [ 12%]
+tests/test_api.py::test_risk_level_matches_class PASSED                  [ 15%]
+tests/test_api.py::test_message_not_empty PASSED                         [ 18%]
+tests/test_api.py::test_invalid_input_rejected PASSED                    [ 21%]
+tests/test_api.py::test_invalid_month_rejected PASSED                    [ 25%]
+tests/test_api.py::test_history_returns_list PASSED                      [ 28%]
+tests/test_api.py::test_stats_returns_correct_keys PASSED                [ 31%]
+tests/test_api.py::test_model_info PASSED                                [ 34%]
+tests/test_api.py::test_ussd_source_accepted PASSED                      [ 37%]
+tests/test_predict.py::test_model_loads PASSED                           [ 40%]
+tests/test_predict.py::test_scaler_loads PASSED                          [ 43%]
+tests/test_predict.py::test_encoders_load PASSED                         [ 46%]
+tests/test_predict.py::test_model_predicts PASSED                        [ 50%]
+tests/test_predict.py::test_month_encoding PASSED                        [ 53%]
+tests/test_predict.py::test_season_assignment PASSED                     [ 56%]
+tests/test_predict.py::test_encoder_known_value PASSED                   [ 59%]
+tests/test_predict.py::test_log_transform PASSED                         [ 62%]
+tests/test_predict.py::test_threshold_classification PASSED              [ 65%]
+tests/test_predict.py::test_feature_vector_length PASSED                 [ 68%]
+tests/test_ussd.py::test_welcome_screen PASSED                           [ 71%]
+tests/test_ussd.py::test_about_branch PASSED                             [ 75%]
+tests/test_ussd.py::test_branch_a_country_menu PASSED                    [ 78%]
+tests/test_ussd.py::test_country_select_shows_animals PASSED             [ 81%]
+tests/test_ussd.py::test_animal_select_shows_symptoms PASSED             [ 84%]
+tests/test_ussd.py::test_full_flow_returns_risk PASSED                   [ 87%]
+tests/test_ussd.py::test_result_contains_probability PASSED              [ 90%]
+tests/test_ussd.py::test_report_flow_completes PASSED                    [ 93%]
+tests/test_ussd.py::test_invalid_choice_handled PASSED                   [ 96%]
+tests/test_ussd.py::test_screen_lengths PASSED                           [100%]
+
+=============================== warnings summary ===============================
+tests/test_predict.py::test_model_predicts
+  /home/anna/PROJECTS/livestock-disease-prediction/venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2827: UserWarning: X does not have valid feature names, but StandardScaler was fitted with feature names
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 32 passed, 1 warning in 4.24s =========================
