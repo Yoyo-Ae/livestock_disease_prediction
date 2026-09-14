@@ -1,21 +1,51 @@
 export const COUNTRIES = [
-    "Nigeria", "Niger", "South Africa", "Zimbabwe", "Cameroon", "Chad", "Benin", "Ghana",
-    "Burkina Faso", "Mali", "Senegal", "Guinea", "Togo", "Cote d' Ivoire", "Sierra Leone",
-    "Gambia", "Kenya", "South Sudan", "Ethiopia", "Uganda", "Tanzania", "Somalia", "Rwanda",
-    "Burundi","Democratic Republic of the Congo", "Sudan", "Zambia", "Mozambique", "Malawi",
-    "Angola", "Namibia","Botswana", "Madagascar"
+    {value: "Nigeria", label: "Nigeria"},
+    {value: "Niger", label: "Niger"},
+    {value: "South Africa", label: "South Africa"},
+    {value: "Zimbabwe", label: "Zimbabwe"},
+    {value: "Cameroon", label: "Cameroon"},
+    {value: "Chad", label: "Chad"},
+    {value: "Benin", label: "Benin"},
+    {value: "Ghana", label: "Ghana"},
+    {value: "Burkina Faso", label: "Burkina Faso"},
+    {value: "Mali", label: "Mali"},
+    {value: "Senegal", label: "Senegal"},
+    {value: "Guinea", label: "Guinea"},
+    {value: "Togo", label: "Togo"},
+    {value: "Cote d' Ivoire", label: "Cote d' Ivoire"},
+    {value: "Sierra Leone", label: "Sierra Leone"},
+    {value: "Gambia", label: "Gambia"},
+    {value: "Kenya", label: "Kenya"},
+    {value: "South Sudan", label: "South Sudan"},
+    {value: "Ethiopia", label: "Ethiopia"},
+    {value: "Uganda", label: "Uganda"},
+    {value: "Tanzania", label: "Tanzania"},
+    {value: "Somalia", label: "Somalia"},
+    {value: "Rwanda", label: "Rwanda"},
+    {value: "Burundi", label: "Burundi"},
+    {value: "Democratic Republic of the Congo", label: "Democratic Republic of the Congo"},
+    {value: "Sudan", label: "Sudan"},
+    {value: "Zambia", label: "Zambia"},
+    {value: "Angola", label: "Angola"},
+    {value: "Namibia", label: "Namibia"},
+    {value: "Botswana", label: "Botswana"},
+    {value: "Madagascar", label: "Madagascar"}
 ];
 
 export const DISEASES = [
-    "Foot and Mouth Disease",
-    "Rift Valley Fever",
-    "Peste des Petitis ruminants",
-    "Contagious bovine pleuropneumonia",
-
+    {value: "Foot and Mouth Disease", label: "Foot and Mouth Disease"},
+    {value: "Rift Valley Fever", label: "Rift Valley Fever"},
+    {value: "Peste des Petitis ruminants", label: "Peste des Petitis ruminants"},
+    {value: "Contagious bovine pleuropneumonia", label: "Contagious bovine pleuropneumonia"}
 ];
 
 export const SPECIES =[
-    "Cattle", "Goats", "Small Ruminants", "Sheep", "Swine", "Poultry"
+    {value: "Cattle", label: "Cattle"},
+    {value: "Goats", label: "Goats"},
+    {value: "Small Ruminants", label: "Small Ruminants"},
+    {value: "Sheep", label: "Sheep"},
+    {value: "Swine", label: "Swine"},
+    {value: "Poultry", label: "Poultry"}
 ];
 
 export const MONTHS = [

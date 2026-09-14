@@ -97,9 +97,9 @@ export default function PredictionPage(){
                 <div style={styles.formCard}>
                     <h2 style ={styles.sectionTitle}>Input Parameters</h2>
 
-                    <Field label="Country" name="country" options={COUNTRIES} value={form.country} onChange={handleChange}/>
-                    <Field label ="Disease Type" name="disease_type" options={DISEASES} value={form.disease_type} onChange={handleChange}/>
-                    <Field label="Species" name="species" options={SPECIES} value={form.species} onChange={handleChange}/>
+                    <Field label="Country" name="country" type="select" options={COUNTRIES} value={form.country} onChange={handleChange}/>
+                    <Field label ="Disease Type" name="disease_type" type="select" options={DISEASES} value={form.disease_type} onChange={handleChange}/>
+                    <Field label="Species" name="species"type="select" options={SPECIES} value={form.species} onChange={handleChange}/>
                     <Field label="Month" name="month" type="select" options={MONTHS} value={form.month} onChange={handleChange}/>
                     <Field label="Year" name="year" type="number" min={2005} max={2030} value={form.year} onChange={handleChange}/>
                     <Field label="Season" name="season" type="radio" options={['Wet', 'Dry']} value={form.season} onChange={handleChange}/>
