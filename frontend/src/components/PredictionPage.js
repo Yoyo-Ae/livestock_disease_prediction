@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {runPrediction} from '../services/api.js';
 import {COUNTRIES, DISEASES, SPECIES, MONTHS} from '../utils/constants.js';
 import {Search, Hourglass, TriangleAlert, CircleCheck} from 'lucide-react'
@@ -17,6 +17,39 @@ const intailForm = {
 
 };
 
+function Field ({label, name, type = 'select', options, min,max,step, value, onChange}) {
+        return (
+        <div style={styles.field}>
+            <label styles={styles.label}>{label}</label>
+            {type === 'select' ? (
+                <select name={name} value={value} onChange = {onChange} style={styles.input}>
+                    {options.map(o => (
+                        <option key ={o.value ?? o} value={o.value ?? 0}>
+                            {o.label ?? o}
+                        </option>
+                    ))}
+                </select>
+            ): type === 'radio'? (
+                <div styles={{display: 'flex', gap:'16px', marginTop: '6px' }}>
+                    {options.map(o => (
+                        <label key={o} style={{display:'flex',alignItems:'center', gap:'6px', fontSize:'14px'}}>
+                            <input type="radio" name={name} value={o} checked={value === o} onChange={onChange}/>{o}
+                        </label>
+                    ))}</div>
+            ): (<input type="number"
+                 name={name} 
+                 value={value} 
+                 onChange={onChange} 
+                 min={min} max={max} 
+                 step={step ?? 'any'} 
+                 style={styles.input}/>
+
+            )}
+        </div>
+    );}
+
+
+
 export default function PredictionPage(){
     const [form,setForm] = useState(intailForm);
     const [result, setResult] = useState(null);
@@ -25,10 +58,11 @@ export default function PredictionPage(){
 
     const handleChange = (e) => {
         const {name, value} = e.target;
+        const numericFields = ['year', 'month', 'livestock_density','rainfall_mm', 'temp_celsuis', 
+                'rolling_outbreak_count']
         setForm(prev => ({
             ...prev,
-            [name]: ['year', 'month', 'livestock_density','rainfall_mm', 'temp_celsuis', 
-                'rolling_outbreak_count'].includes(name) ? parseFloat(value): value
+            [name]: numericFields.includes(name) && value !== '' && !isNaN(value) ? Number(value): value
         }));
     };
     
@@ -40,41 +74,19 @@ export default function PredictionPage(){
             const data = await runPrediction(form);
             setResult(data);
         }catch (err){
-                setError('Prediction failed.Make sure the API is running at 8000.');
+                setError('Prediction failed.Make sure the API is running at 8000 or refill ALL form inputs');
         }finally {
                 setLoading(false);
         }
     };
+    
+    
 
-    const Field = ({label, name, type = 'select', options, min,max,step}) => (
-        <div style={styles.field}>
-            <label styles={styles.label}>{label}</label>
-            {type === 'select' ? (
-                <select name={name} value={form[name]} onChange = {handleChange} style={styles.input}>
-                    {options.map(o => (
-                        <option key ={o.value ?? o}>
-                            {o.label ?? o}
-                        </option>
-                    ))}
-                </select>
-            ): type === 'radio'? (
-                <div styles={{display: 'flex', gap:'16px', marginTop: '6px' }}>
-                    {options.map(o => (
-                        <label key={o} style={{display:'flex',alignItems:'center', gap:'6px', fontSize:'14px'}}>
-                            <input type="radio" name={name} value={o} checked={form[name] === o} onChange={handleChange}/>{o}
-                        </label>
-                    ))}</div>
-            ): (<input type="number"
-                 name={name} 
-                 value={form[name]} 
-                 onChange={handleChange} 
-                 min={min} max={max} 
-                 step={step ?? 'any'} 
-                 style={styles.input}/>
-
-            )}
-        </div>
-    );
+    const RISK_CONFIG = {
+            HIGH:     { bg: '#DC2626', emoji: '⚠',  label: 'HIGH RISK'     },
+            MODERATE: { bg: '#D97706', emoji: '⚡', label: 'MODERATE RISK' },
+            LOW:      { bg: '#16A34A', emoji: '✓',  label: 'LOW RISK'       }
+    };
     return (
         <div style={styles.page}>
             <h1 style={styles.heading}>New Prediction</h1>
@@ -85,16 +97,16 @@ export default function PredictionPage(){
                 <div style={styles.formCard}>
                     <h2 style ={styles.sectionTitle}>Input Parameters</h2>
 
-                    <Field label="Country" name="country" options={COUNTRIES}/>
-                    <Field label ="Disease Type" name="disease_type" options={DISEASES}/>
-                    <Field label="Species" name="species" options={SPECIES}/>
-                    <Field label="Month" name="month" options={MONTHS}/>
-                    <Field label="Year" name="year" type="number" min={2005} max={2030}/>
-                    <Field label="Season" name="season" type="radio" options={['Wet', 'Dry']}/>
-                    <Field label="Livestock Density (animal/km2)" name="livestock_density" type="number" min={0} step={0.1}/>
-                    <Field label="Rainfall (mm)" name="rainfall_mm" type="number" min={0} step={0.1}/>
-                    <Field label="Temperature" name="temp_celsuis" type="number" step={0.1}/>
-                    <Field label="Outbreak in past 12 months" name="rolling_outbreak_count" type="number" min={0} max={50}/>
+                    <Field label="Country" name="country" options={COUNTRIES} value={form.country} onChange={handleChange}/>
+                    <Field label ="Disease Type" name="disease_type" options={DISEASES} value={form.disease_type} onChange={handleChange}/>
+                    <Field label="Species" name="species" options={SPECIES} value={form.species} onChange={handleChange}/>
+                    <Field label="Month" name="month" type="select" options={MONTHS} value={form.month} onChange={handleChange}/>
+                    <Field label="Year" name="year" type="number" min={2005} max={2030} value={form.year} onChange={handleChange}/>
+                    <Field label="Season" name="season" type="radio" options={['Wet', 'Dry']} value={form.season} onChange={handleChange}/>
+                    <Field label="Livestock Density (animal/km2)" name="livestock_density" type="number" value={form.livestock_density} onChange={handleChange}/>
+                    <Field label="Rainfall (mm)" name="rainfall_mm" type="number" min={0} step={0.1} value={form.rainfall_mm} onChange={handleChange}/>
+                    <Field label="Temperature" name="temp_celsuis" type="number" step={0.1} value={form.temp_celsuis} onChange={handleChange}/>
+                    <Field label="Outbreak in past 12 months" name="rolling_outbreak_count" type="number" min={0} max={50} value={form.rolling_outbreak_count} onChange={handleChange}/>
 
                     <button onClick={handleSubmit} disabled={loading} style={{...styles.btn, opacity: loading ? 0.7 : 1}}>
                         {loading ? (<><Hourglass/> Predicting...</>) : (<><Search/> Run Prediction</>)}
@@ -112,47 +124,92 @@ export default function PredictionPage(){
                     {loading && (
                         <div style={styles.placeholder}>Running Prediction...</div>
                     )}
+                   
+
+                
                     {result && (
                         <div>
-                            {/*RISK BANNER*/}
-                            <div style={{...styles.riskBanner, backgroundColor: result.risk_level === 'HIGH' ? '#dc2626': '#16a34a'}}>
-                                {result.risk_level === 'HIGH' ? (<><TriangleAlert/>HIGH RISK</>): (<><CircleCheck/>LOW RISK</>)}
+                            {/* Risk banner */}
+                            <div style={{
+                                ...styles.riskBanner,
+                                backgroundColor: RISK_CONFIG[result.risk_level]?.bg || '#6B7280'
+                                }}>
+                                {RISK_CONFIG[result.risk_level]?.emoji} {RISK_CONFIG[result.risk_level]?.label}
                             </div>
-                            {/*PROBABILITY*/}
-                            <div styles={styles.probSection}>
-                                <div styles={styles.probValue}>
+
+                            {/* Probability */}
+                            <div style={styles.probSection}>
+                                <div style={styles.probValue}>
                                     {(result.outbreak_probability * 100).toFixed(1)}%
                                 </div>
                                 <div style={styles.probLabel}>Outbreak Probability</div>
                             </div>
-                            {/*PROBABILITY BAR*/}
+
+                            {/* Three-zone probability bar */}
                             <div style={styles.barContainer}>
                                 <div style={styles.barTrack}>
-                                    <div style={{...styles.barFill, width:`${result.outbreak_probability * 100}%`, backgroundColor:result.risk_level === 'HIGH'? '#dc2626': '#16a36a'}}/>
-                                {/*THRESHOLD MARKER*/}
-                                <div style={{...styles.thresholdMarker, left: `${result.threshold_used * 100}%`}}/>
+                                    {/* Low zone */}
+                                    <div style={{
+                                        position: 'absolute', left: '0%', width: '10%',
+                                        height: '100%', backgroundColor: '#DCFCE7',
+                                        borderRadius: '6px 0 0 6px'
+                                    }}/>
+                                    {/* Moderate zone */}
+                                    <div style={{
+                                        position: 'absolute', left: '10%', width: '10%',
+                                        height: '100%', backgroundColor: '#FEF9C3'
+                                    }}/>
+                                    {/* High zone */}
+                                    <div style={{
+                                        position: 'absolute', left: '20%', width: '80%',
+                                        height: '100%', backgroundColor: '#FEE2E2',
+                                        borderRadius: '0 6px 6px 0'
+                                    }}/>
+                                    {/* Probability marker */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        left: `${result.outbreak_probability * 100}%`,
+                                        top: '-6px',
+                                        width: '4px',
+                                        height: '24px',
+                                        backgroundColor: '#1B4332',
+                                        transform: 'translateX(-50%)',
+                                        borderRadius: '2px',
+                                        zIndex: 10
+                                    }}/>
                                 </div>
                                 <div style={styles.barLabels}>
-                                    <span>0%</span>
-                                    <span style={{color: '#d97706', fontSize:'11px'}}>
-                                        <TriangleAlert/> Threshold ({(result.threshold_used *100).toFixed(0)}%)
-                                    </span>
-                                    <span>100%</span>
+                                    <span style={{ color: '#16A34A' }}>LOW</span>
+                                    <span style={{ color: '#D97706', marginLeft: '10%' }}>MODERATE</span>
+                                    <span style={{ color: '#DC2626', marginLeft: '10%' }}>HIGH RISK</span>
+                                    <span style={{ marginLeft: 'auto' }}>100%</span>
                                 </div>
                             </div>
-                            {/*MESSAGE*/}
-                            <div style={styles.message}>{result.message}</div>
-                            {/*INPUT SUMMARY*/}
+
+                            {/* Message */}
+                            <div style={{
+                                ...styles.message,
+                                backgroundColor:result.risk_level === 'HIGH'     ? '#FEF2F2' :
+                                                result.risk_level === 'MODERATE' ? '#FFFBEB' : '#F0FDF4',
+                                borderColor:    result.risk_level === 'HIGH'     ? '#FECACA' :
+                                                result.risk_level === 'MODERATE' ? '#FDE68A' : '#BBF7D0',
+                                color:          result.risk_level === 'HIGH'     ? '#991B1B' :
+                                                result.risk_level === 'MODERATE' ? '#92400E' : '#166534'
+                            }}>
+                                {result.message}
+                            </div>
+
+                            {/* Input summary stays the same */}
                             <div style={styles.inputSummary}>
                                 <div style={styles.summaryTitle}>Inputs Used</div>
                                 {[
-                                    ['Country', form.country],
-                                    ['Disease', form.disease_type],
-                                    ['Species', form.species],
-                                    ['Period', `${MONTHS.find(m=>m.value===form.month)?.label} ${form.year}`],
-                                    ['Season', form.season],
-                                    ['Model', result.model_name]
-                                ].map(([k,v])=> (
+                                    ['Country',  form.country],
+                                    ['Disease',  form.disease_type],
+                                    ['Species',  form.species],
+                                    ['Period',   `${MONTHS.find(m=>m.value===form.month)?.label} ${form.year}`],
+                                    ['Season',   form.season],
+                                    ['Model',    result.model_name],
+                                ].map(([k, v]) => (
                                     <div key={k} style={styles.summaryRow}>
                                         <span style={styles.summaryKey}>{k}</span>
                                         <span style={styles.summaryVal}>{v}</span>

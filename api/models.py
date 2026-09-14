@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 class PredictionInput(BaseModel):
     country: str = Field(...,example="Nigeria")
@@ -25,7 +25,7 @@ class PredictionOutput(BaseModel):
     outbreak_probability: float
     risk_level: str
     message: str
-    threshold_used: float
+    threshold_used: Union[dict, float]
     model_name: str
 
 class HealthResponse(BaseModel):

@@ -138,6 +138,13 @@ def format_result(result: dict, animal: str) -> str:
             f"{animal.lower()} now. Contact your "
             f"nearest vet officer immediately."
         )
+    elif risk == "MODERATE":
+        return (
+            f"MODERATE RISK ({prob_pct}%): Conditions "
+            f"favour disease spread. Watch your "
+            f"{animal.lower()} closely for symptoms. "
+            f"Contact vet if animals fall sick."
+        )
     else:
         return (
             f"LOW RISK ({prob_pct}%): No outbreak "

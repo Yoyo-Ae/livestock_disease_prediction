@@ -71,7 +71,8 @@ export default function DashboardPage() {
                     </span>
                   </td>
                   <td style={styles.td}>
-                    <span className={row.risk_level === 'HIGH' ? 'badge-high' : 'badge-low'}>
+                    <span className={row.risk_level === 'HIGH' ? 'badge-high' : 
+                                    row.risk_level === 'MODERATE' ? 'badge-moderate': 'badge-low'}>
                       {row.risk_level}
                     </span>
                   </td>

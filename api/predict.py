@@ -107,53 +107,86 @@ class PredictionService:
         ]).reshape(1,-1)
         
         return vector
-    def predict(self, input_data):
+    def classify_risk(self, probability: float) -> tuple:
+        #Classify the probability into three risk levels: LOW, MODERATE, HIGH
+        #Return a tuple of (risk_level, predicted_class, tone)
+        #predicted_class is 1 for HIGH risk, 0 for LOW or MODERATE risk
+        #tone is a string indicating the tone of the message: "low", "moderate", "high"
+        thresholds = self.metadata.get("risk_thresholds", {
+            "low_max":      0.10,
+            "moderate_max": 0.20,
+            "high_min":     0.20
+        })
+
+        if probability < thresholds["low_max"]:
+            return "LOW", 0, "low"
+        elif probability < thresholds["moderate_max"]:
+            return "MODERATE", 0, "moderate"
+        else:
+         return "HIGH", 1, "high"
+
+    def predict(self, input_data) -> dict:
+    # Build feature vector
         vector = self.build_feature_vector(input_data)
 
+    # Scale
         vector_scaled = self.scaler.transform(vector)
 
+    # Predict probability
         proba = float(self.model.predict_proba(vector_scaled)[0][1])
 
-        predicted_class = 1 if proba >= self.threshold else 0
-        risk_level = "HIGH" if predicted_class == 1 else "LOW"
+    # Classify into three risk levels
+        risk_level, predicted_class, tone = self.classify_risk(proba)
 
+    # Build message based on risk level
         disease_short = {
-            "foot and mouth disease": "Foot and Mouth Disease (FMD)",
-            "peste de pestits ruminants": "Peste de Petits Ruminants (PPR)",
-            "lumpy skin disease":"Lumpy Skin Disease (LSD)",
-            "contagious bovine pleuropnemonia": "CBPP",
-            "rift valley fever": "Rift Valley Fever (RVF)"
+            "foot and mouth disease":           "Foot and Mouth Disease (FMD)",
+            "peste des petits ruminants":        "Peste des Petits Ruminants (PPR)",
+            "lumpy skin disease":                "Lumpy Skin Disease (LSD)",
+            "contagious bovine pleuropneumonia": "CBPP",
+            "rift valley fever":                 "Rift Valley Fever (RVF)"
         }.get(input_data.disease_type.lower(), input_data.disease_type)
 
-        if predicted_class == 1:
+        if tone == "high":
             message = (
-                f"HIGH RISK: {disease_short} outbreak likely in {input_data.country}."
-                f"Isolate sick animals immediately and contact your nearest veterinary officer "
-                f"Probability: {proba:.0%}"
+                f"HIGH RISK: {disease_short} outbreak likely in "
+                f"{input_data.country}. Isolate sick animals "
+                f"immediately and contact your nearest veterinary "
+                f"officer. Probability: {proba:.0%}."
+            )
+        elif tone == "moderate":
+            message = (
+                f"MODERATE RISK: Conditions in {input_data.country} "
+                f"are favourable for {disease_short}. Increase "
+                f"monitoring of your livestock and watch for early "
+                f"symptoms. Probability: {proba:.0%}."
             )
         else:
             message = (
                 f"LOW RISK: No {disease_short} outbreak expected in "
-                f"{input_data.country} at this time."
-                f"Countinue routine monitoring. Probability: {proba:.0%}."
+                f"{input_data.country} at this time. Continue "
+                f"routine monitoring. Probability: {proba:.0%}."
             )
-        return{
-            "predicted_class": predicted_class,
-            "outbreak_probability": round(proba,4),
-            "risk_level": risk_level,
-            "message": message,
-            "threshold_used":self.threshold,
-            "model_name": type(self.model).__name__,
-            "country_encoded": self._safe_encode("country", input_data.country),
-            "disease_encoded": self._safe_encode("disease_type", input_data.disease_type),
-            "species_encoded": self._safe_encode("species", input_data.species),
-            "livestock_density": input_data.livestock_density,
-            "rainfall_anomaly": input_data.rainfall_mm - 85.0,
-            "temp_anomaly": input_data.temp_celsuis -29.5,
+
+        return {
+            "predicted_class":        predicted_class,
+            "outbreak_probability":   round(proba, 4),
+            "risk_level":             risk_level,
+            "message":                message,
+            "threshold_used":         self.metadata.get(
+                                    "risk_thresholds",
+                                    {"high_min": 0.20}
+                                  ),
+            "model_name":             type(self.model).__name__,
+            "country_encoded":        self._safe_encode("country", input_data.country),
+            "disease_encoded":        self._safe_encode("disease_type", input_data.disease_type),
+            "species_encoded":        self._safe_encode("species", input_data.species),
+            "livestock_density":      input_data.livestock_density,
+            "rainfall_anomaly":       input_data.rainfall_mm - 85.0,
+            "temp_anomaly":           input_data.temp_celsuis - 29.5,
             "rolling_outbreak_count": input_data.rolling_outbreak_count,
-            "season_encoded": self._safe_encode("season", input_data.season)
+            "season_encoded":         self._safe_encode("season", input_data.season)
         }
 prediction_service = PredictionService()
 
-    
     

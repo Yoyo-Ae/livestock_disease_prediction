@@ -15,6 +15,7 @@ export default function HistoryPage() {
 
   const filtered = history.filter(row => {
     if (filter === 'high') return row.risk_level === 'HIGH';
+    if (filter === 'moderate') return row.risk_level === "MODERATE";
     if (filter === 'low')  return row.risk_level === 'LOW';
     if (filter === 'ussd') return row.source_interface === 'ussd';
     if (filter === 'react') return row.source_interface === 'react';
@@ -30,6 +31,7 @@ export default function HistoryPage() {
       <div style={styles.filters}>
         {[
           { id: 'all',   label: 'All'         },
+          {id: 'moderate', label: 'Moderate Risk'},
           { id: 'high',  label: 'High Risk'   },
           { id: 'low',   label: 'Low Risk'    },
           { id: 'react', label: 'Web Only'    },
@@ -83,7 +85,8 @@ export default function HistoryPage() {
                       </span>
                     </td>
                     <td style={styles.td}>
-                      <span className={row.risk_level === 'HIGH' ? 'badge-high' : 'badge-low'}>
+                      <span className={row.risk_level === 'HIGH' ? 'badge-high' : 
+                                      row.risk_level === 'MODERATE'? 'badge-moderate': 'badge-low'}>
                         {row.risk_level ?? 'N/A'}
                       </span>
                     </td>

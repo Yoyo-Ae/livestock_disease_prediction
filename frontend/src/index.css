@@ -29,6 +29,14 @@ body{
   font-size: 12px;
   font-weight: 600;
 }
+.badge-moderate {
+  background-color: #D97706;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
 .badge-low{
   background-color: #16a34a;
   color: white;
